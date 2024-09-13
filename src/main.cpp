@@ -36,28 +36,39 @@ int main ()
 	// Create the window and OpenGL context
 	InitWindow(1280, 800, "Hello Raylib");
 
+	Camera camera = { 0 };
+	camera.position = { 0.0f, 10.0f, 10.0f };
+	camera.target = { 0.0f, 0.0f, 0.0f };
+	camera.up = { 0.0f, 1.0f, 0.0f };
+	camera.fovy = 45.0f;
+	camera.projection = CAMERA_PERSPECTIVE;
+
+
+
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
+
+	SetTargetFPS(60);
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		// drawing
 		BeginDrawing();
 
-		// Setup the backbuffer for drawing (clear color and depth buffers)
-		ClearBackground(BLACK);
+			ClearBackground(RAYWHITE);
 
-		// draw some text using the default font
-		DrawText("Hello Raylib", 200,200,20,WHITE);
+			BeginMode3D(camera);
+				
+				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
 
-		// draw our texture to the screen
-		DrawTexture(wabbit, 400, 200, WHITE);
-		
-		// end the frame and get ready for the next one  (display frame, poll input, etc...)
+				DrawGrid(10, 1.0f);
+
+			EndMode3D();
+			DrawFPS(10, 10);
+
 		EndDrawing();
 	}
 
