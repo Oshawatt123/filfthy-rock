@@ -52,10 +52,34 @@ int main ()
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
 	SetTargetFPS(60);
+
+	constexpr float sphereRadius = 2.0f;
+
+	Vector3 spherePosition = { 0.0f, sphereRadius / 2, 0.0f };
+
+	constexpr float moveSpeed = 1.5f;
 	
 	// game loop
-	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
+	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
+		if (IsKeyDown(KEY_LEFT))
+		{
+			spherePosition.x -= (moveSpeed * GetFrameTime());
+		}
+		if (IsKeyDown(KEY_RIGHT))
+		{
+			spherePosition.x += (moveSpeed * GetFrameTime());
+		}
+		if (IsKeyDown(KEY_UP))
+		{
+			spherePosition.z -= (moveSpeed * GetFrameTime());
+		}
+		if (IsKeyDown(KEY_DOWN))
+		{
+			spherePosition.z += (moveSpeed * GetFrameTime());
+		}
+
+
 		BeginDrawing();
 
 			ClearBackground(RAYWHITE);
@@ -63,6 +87,8 @@ int main ()
 			BeginMode3D(camera);
 				
 				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
+
+				DrawSphere(spherePosition, sphereRadius, GREEN);
 
 				DrawGrid(10, 1.0f);
 
