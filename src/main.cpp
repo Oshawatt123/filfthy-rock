@@ -24,7 +24,12 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 */
 
+#include <memory>
+
+
 #include "raylib.h"
+
+#include "TaitoCar.h"
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
@@ -53,32 +58,13 @@ int main ()
 
 	SetTargetFPS(60);
 
-	constexpr float sphereRadius = 2.0f;
-
-	Vector3 spherePosition = { 0.0f, sphereRadius / 2, 0.0f };
-
-	constexpr float moveSpeed = 1.5f;
+	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>();
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
-		if (IsKeyDown(KEY_LEFT))
-		{
-			spherePosition.x -= (moveSpeed * GetFrameTime());
-		}
-		if (IsKeyDown(KEY_RIGHT))
-		{
-			spherePosition.x += (moveSpeed * GetFrameTime());
-		}
-		if (IsKeyDown(KEY_UP))
-		{
-			spherePosition.z -= (moveSpeed * GetFrameTime());
-		}
-		if (IsKeyDown(KEY_DOWN))
-		{
-			spherePosition.z += (moveSpeed * GetFrameTime());
-		}
-
+		
+		car->Update();
 
 		BeginDrawing();
 
@@ -88,11 +74,13 @@ int main ()
 				
 				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
 
-				DrawSphere(spherePosition, sphereRadius, GREEN);
+				car->Draw3D();
 
 				DrawGrid(10, 1.0f);
 
 			EndMode3D();
+
+			car->Draw();
 			DrawFPS(10, 10);
 
 		EndDrawing();
