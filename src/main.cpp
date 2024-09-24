@@ -42,7 +42,7 @@ int main ()
 	InitWindow(1280, 800, "Hello Raylib");
 
 	Camera camera = { 0 };
-	camera.position = { 0.0f, 10.0f, 10.0f };
+	camera.position = { -10.0f, 10.0f, 0.0f };
 	camera.target = { 0.0f, 0.0f, 0.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 45.0f;
@@ -77,6 +77,10 @@ int main ()
 				car->Draw3D();
 
 				DrawGrid(10, 1.0f);
+
+				DrawLine3D({ 0,0,0 }, { 3, 0, 0 }, RED);
+				DrawLine3D({ 0,0,0 }, { 0, 0, 3 }, GREEN);
+				DrawLine3D({ 0,0,0 }, { 0, 3, 0 }, BLUE);
 
 			EndMode3D();
 
