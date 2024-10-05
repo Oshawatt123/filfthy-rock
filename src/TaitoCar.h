@@ -19,6 +19,11 @@ private:
 	Vector3 brakingForce = { 0,0,0 };
 	Vector3 carAcceleration = { 0,0,0 };
 
+	float maxSteeringAngle = 70.0f;
+	float steeringAngle = 0.0f;
+
+	float carLength = 1.0f;
+
 	float resistance = 0.3f;
 	
 	float mass = 1.0f;
@@ -30,6 +35,7 @@ private:
 public:
 
 	TaitoCar();
+	TaitoCar(Model _carModel);
 
 	// To go to base class
 	void Update();

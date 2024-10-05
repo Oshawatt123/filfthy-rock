@@ -11,6 +11,11 @@ TaitoCar::TaitoCar()
 	carModel = LoadModelFromMesh(carMesh);
 }
 
+TaitoCar::TaitoCar(Model _carModel)
+{
+	carModel = _carModel;
+}
+
 void TaitoCar::Update()
 {
 	engineForce = { 0,0,0 };
@@ -19,11 +24,11 @@ void TaitoCar::Update()
 	carAcceleration = { 0,0,0 };
 	if (IsKeyDown(KEY_LEFT))
 	{
-		rotation.y += (moveSpeed);
+		steeringAngle += (moveSpeed);
 	}
 	if (IsKeyDown(KEY_RIGHT))
 	{
-		rotation.y -= (moveSpeed);
+		steeringAngle -= (moveSpeed);
 	}
 	if (IsKeyDown(KEY_UP))
 	{
@@ -34,14 +39,24 @@ void TaitoCar::Update()
 		// negative because braking force acts opposite to velocity
 		brakingForce = Vector3Multiply(Vector3Normalize(velocity), { -brakePower, -brakePower, -brakePower });
 	}
+	if (IsKeyDown(KEY_R))
+	{
+		engineForce.x -= (moveSpeed);
+	}
+
+	steeringAngle = fmax(-maxSteeringAngle, fmin(steeringAngle, maxSteeringAngle));
+
+	float turningRadius = carLength / sin(steeringAngle * DEG2RAD);
+	float angularVelocity = velocity.x / turningRadius;
+	rotation.y += (angularVelocity * RAD2DEG) * GetFrameTime();
 
 
 	forward = Vector3RotateByAxisAngle({ 1,0,0 }, { 0,1,0 }, rotation.y * DEG2RAD);
 	right = Vector3RotateByAxisAngle({ 0,0,1 }, { 0,1,0 }, rotation.y * DEG2RAD);
 
 	// convert car forces to face forward
-	engineForce = Vector3RotateByAxisAngle(engineForce, { 0,1,0 }, rotation.y * DEG2RAD);
-	brakingForce = Vector3RotateByAxisAngle(brakingForce, { 0,1,0 }, rotation.y * DEG2RAD);
+	//engineForce = Vector3RotateByAxisAngle(engineForce, { 0,1,0 }, rotation.y * DEG2RAD);
+	//brakingForce = Vector3RotateByAxisAngle(brakingForce, { 0,1,0 }, rotation.y * DEG2RAD);
 
 	Vector3 rollingResistance = { 0,0,0 };
 	rollingResistance.x = velocity.x * -resistance;
@@ -70,8 +85,10 @@ void TaitoCar::Update()
 	velocity.x += carAcceleration.x * GetFrameTime();
 	velocity.z += carAcceleration.z * GetFrameTime();
 
-	position.x += velocity.x * GetFrameTime();
-	position.z += velocity.z * GetFrameTime();
+	Vector3 velocityForward = Vector3RotateByAxisAngle(velocity, { 0,1,0 }, rotation.y * DEG2RAD);
+
+	position.x += velocityForward.x * GetFrameTime();
+	position.z += velocityForward.z * GetFrameTime();
 }
 
 void TaitoCar::Draw3D()
@@ -106,4 +123,9 @@ void TaitoCar::Draw()
 	stream << "Rotation: " << std::fixed << std::setprecision(2) << rotation.x << ";" << rotation.y << ";" << rotation.z;
 	textString = stream.str();
 	DrawText(textString.c_str(), 10, 80, 30, GREEN);
+
+	stream.str("");
+	stream << "Steering angle: " << steeringAngle;
+	textString = stream.str();
+	DrawText(textString.c_str(), 10, 130, 30, GREEN);
 }

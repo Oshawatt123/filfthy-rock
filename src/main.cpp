@@ -55,10 +55,11 @@ int main ()
 
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
+	Model carModel = LoadModel("RaceCar.glb");
 
 	SetTargetFPS(60);
 
-	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>();
+	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>();// carModel);
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
