@@ -19,15 +19,18 @@ private:
 	Vector3 brakingForce = { 0,0,0 };
 	Vector3 carAcceleration = { 0,0,0 };
 
-	float maxSteeringAngle = 70.0f;
+	float maxSteeringAngle = 35.0f;
 	float steeringAngle = 0.0f;
+	float steerForce = 70.0f;
+	float steerNeutralForce = 50.0f;
+	float steeringNeurtalBuffer = 5.0f;
 
-	float carLength = 1.0f;
+	float carLength = 4.0f;
 
 	float resistance = 0.3f;
 	
 	float mass = 1.0f;
-	float moveSpeed = 1.0f;
+	float moveSpeed = 8.0f;
 	float brakePower = 3.0f;
 
 	Model carModel;

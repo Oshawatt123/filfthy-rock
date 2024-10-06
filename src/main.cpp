@@ -42,8 +42,8 @@ int main ()
 	InitWindow(1280, 800, "Hello Raylib");
 
 	Camera camera = { 0 };
-	camera.position = { -10.0f, 10.0f, 0.0f };
-	camera.target = { 0.0f, 0.0f, 0.0f };
+	camera.position = { 10.0f, 100.0f, -5.0f };
+	camera.target = { 10.0f, 0.0f, -25.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 45.0f;
 	camera.projection = CAMERA_PERSPECTIVE;
@@ -56,15 +56,21 @@ int main ()
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 	Model carModel = LoadModel("RaceCar.glb");
+	Model trackModel = LoadModel("Track.glb");
 
 	SetTargetFPS(60);
 
-	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>();// carModel);
+	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>(carModel);
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		
+		if (IsKeyDown(KEY_UP))
+		{
+			camera.target.z -= 1;
+		}
+
 		car->Update();
 
 		BeginDrawing();
@@ -74,6 +80,8 @@ int main ()
 			BeginMode3D(camera);
 				
 				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
+
+				DrawModelEx(trackModel, { 0,0,0 }, { 0,0,0 }, 0, { 1,1,1 }, WHITE);
 
 				car->Draw3D();
 

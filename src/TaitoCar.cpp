@@ -22,19 +22,19 @@ void TaitoCar::Update()
 	brakingForce = { 0,0,0 };
 
 	carAcceleration = { 0,0,0 };
-	if (IsKeyDown(KEY_LEFT))
+	if (IsKeyDown(KEY_A))
 	{
-		steeringAngle += (moveSpeed);
+		steeringAngle += (steerForce * GetFrameTime());
 	}
-	if (IsKeyDown(KEY_RIGHT))
+	if (IsKeyDown(KEY_D))
 	{
-		steeringAngle -= (moveSpeed);
+		steeringAngle -= (steerForce * GetFrameTime());
 	}
-	if (IsKeyDown(KEY_UP))
+	if (IsKeyDown(KEY_W))
 	{
 		engineForce.x += (moveSpeed);
 	}
-	if (IsKeyDown(KEY_DOWN))
+	if (IsKeyDown(KEY_S))
 	{
 		// negative because braking force acts opposite to velocity
 		brakingForce = Vector3Multiply(Vector3Normalize(velocity), { -brakePower, -brakePower, -brakePower });
@@ -44,6 +44,26 @@ void TaitoCar::Update()
 		engineForce.x -= (moveSpeed);
 	}
 
+	// bring steering angle back to neutral
+	if (!IsKeyDown(KEY_A) && !IsKeyDown(KEY_D))
+	{
+		if (steeringAngle > 0)
+		{
+			steeringAngle -= steerNeutralForce * GetFrameTime();
+		}
+		else if (steeringAngle < 0)
+		{
+			steeringAngle += steerNeutralForce * GetFrameTime();
+		}
+
+		// set steering angle to 0 if within tolerance
+		if (abs(steeringAngle) < steeringNeurtalBuffer)
+		{
+			steeringAngle = 0;
+		}
+	}
+
+	// clamp steering to maxSteeringAngle
 	steeringAngle = fmax(-maxSteeringAngle, fmin(steeringAngle, maxSteeringAngle));
 
 	float turningRadius = carLength / sin(steeringAngle * DEG2RAD);
@@ -109,7 +129,7 @@ void TaitoCar::Draw3D()
 	lineEnd.z = position.z + (velocity.z * 5.0f);
 	DrawLine3D(position, lineEnd, GREEN);
 
-	DrawModelEx(carModel, position, { 0,1,0 }, rotation.y, { 1,1,1 }, BLUE);
+	DrawModelEx(carModel, position, { 0,1,0 }, rotation.y, { 1,1,1 }, WHITE);
 }
 
 void TaitoCar::Draw()
