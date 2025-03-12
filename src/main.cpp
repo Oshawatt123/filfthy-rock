@@ -29,6 +29,7 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #include "raylib.h"
 
+#include "Particle.h"
 #include "TaitoCar.h"
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
@@ -42,11 +43,12 @@ int main ()
 	InitWindow(1280, 800, "Hello Raylib");
 
 	Camera camera = { 0 };
-	camera.position = { 10.0f, 100.0f, -5.0f };
+	camera.position = { 10.0f, 10.0f, 10.0f };
 	camera.target = { 10.0f, 0.0f, -25.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 45.0f;
 	camera.projection = CAMERA_PERSPECTIVE;
+	DisableCursor();
 
 
 
@@ -58,6 +60,8 @@ int main ()
 	Model carModel = LoadModel("RaceCar.glb");
 	Model trackModel = LoadModel("Track.glb");
 
+	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
+
 	SetTargetFPS(60);
 
 	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>(carModel);
@@ -66,12 +70,9 @@ int main ()
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		
-		if (IsKeyDown(KEY_UP))
-		{
-			camera.target.z -= 1;
-		}
+		UpdateCamera(&camera, CAMERA_FREE);
 
-		car->Update();
+		particle->Update();
 
 		BeginDrawing();
 
@@ -81,11 +82,9 @@ int main ()
 				
 				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
 
-				DrawModelEx(trackModel, { 0,0,0 }, { 0,0,0 }, 0, { 1,1,1 }, WHITE);
+				particle->Draw3D();
 
-				car->Draw3D();
-
-				DrawGrid(10, 1.0f);
+				DrawGrid(100, 1.0f);
 
 				DrawLine3D({ 0,0,0 }, { 3, 0, 0 }, RED);
 				DrawLine3D({ 0,0,0 }, { 0, 0, 3 }, GREEN);
@@ -93,7 +92,9 @@ int main ()
 
 			EndMode3D();
 
-			car->Draw();
+			particle->Draw();
+			//particle->DrawDebug();
+
 			DrawFPS(10, 10);
 
 		EndDrawing();
