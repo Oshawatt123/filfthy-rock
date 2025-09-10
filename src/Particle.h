@@ -2,28 +2,28 @@
 
 #include "raylib.h"
 
-class Particle
+#include "PhysicsObject.h"
+
+class Particle : public PhysicsObject
 {
-private:
-    Vector3 Position = { 0, 10.0f, 0 };
-    
-    Vector3 Velocity = {0, 0, 0};
-    Vector3 Acceleration = { 0, 0, 0 };
-    Vector3 ImpactForces = { 0, 0, 0 };
+protected:
+    virtual void Integrate();
 
-    float Mass = 1.0f;
     float radius = 0.5f;
-
-    void Integrate();
-    void CheckCollision();
 
 public:
     Particle();
     ~Particle();
 
-    void Update();
-    void Draw3D();
-    void Draw();
-    void DrawDebug();
+    Particle(Vector3 pos);
+    Particle(Vector3 pos, Vector3 vel);
+
+    virtual void Update() override;
+    virtual void Draw3D() override;
+    virtual void Draw() override;
+    virtual void DrawDebug() override;
+
+    void CheckCollision(std::shared_ptr<PhysicsObject> other = nullptr) override;
+    
 
 };

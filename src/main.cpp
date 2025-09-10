@@ -30,7 +30,10 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 #include "raylib.h"
 
 #include "Particle.h"
+#include "Box.h"
 #include "TaitoCar.h"
+
+#include "FilthyEngine.h"
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
@@ -43,8 +46,8 @@ int main ()
 	InitWindow(1280, 800, "Hello Raylib");
 
 	Camera camera = { 0 };
-	camera.position = { 10.0f, 10.0f, 10.0f };
-	camera.target = { 10.0f, 0.0f, -25.0f };
+	camera.position = { 10.0f, 15.0f, 30.0f };
+	camera.target = { 10.0f, 5.0f, 0.0f };
 	camera.up = { 0.0f, 1.0f, 0.0f };
 	camera.fovy = 45.0f;
 	camera.projection = CAMERA_PERSPECTIVE;
@@ -60,19 +63,69 @@ int main ()
 	Model carModel = LoadModel("RaceCar.glb");
 	Model trackModel = LoadModel("Track.glb");
 
-	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
+
+	std::unique_ptr<FilthyEngine> filthyEngine = std::make_unique<FilthyEngine>();
+
+	// floow
+	std::shared_ptr<Box> floor = std::make_shared<Box>(Vector3{ 0, -0.5, 0 }, 100, 1, 100);
+	floor->isFloor = true;
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(floor));
+
+
+	// test case 1
+	std::shared_ptr<Particle> particle = std::make_shared<Particle>(Vector3{ 0, 5, 0 }, Vector3{0,0,0});
+
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle));
+	
+	// test case 2
+	std::shared_ptr<Particle> particle2 = std::make_shared<Particle>(Vector3{ 5, 5, 0 }, Vector3{ 0,0,0 });
+	std::shared_ptr<Box> box2 = std::make_shared<Box>(Vector3{ 5, 1, 0 }, 2, 1, 2);
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle2));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box2));
+
+	// test case 3
+	std::shared_ptr<Particle> particle3 = std::make_shared<Particle>(Vector3{ 10, 0, 0 }, Vector3{ 0,10,0 });
+	std::shared_ptr<Box> box3 = std::make_shared<Box>(Vector3{ 10, 5, 0 }, 2, 1, 2);
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle3));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box3));
+
+	// test case 4
+	std::shared_ptr<Particle> particle4 = std::make_shared<Particle>(Vector3{ 15, 0, 0 }, Vector3{ 10, 2, 0 });
+	std::shared_ptr<Box> box4 = std::make_shared<Box>(Vector3{ 12, 2, 0 }, 1, 4, 2);
+	std::shared_ptr<Box> box4_1 = std::make_shared<Box>(Vector3{ 18, 2, 0 }, 1, 4, 2);
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle4));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box4));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box4_1));
+
+	// test case 5
+	std::shared_ptr<Particle> particle5 = std::make_shared<Particle>(Vector3{ 15, 10, 0 }, Vector3{ 10, 2, 0 });
+	std::shared_ptr<Box> box5 = std::make_shared<Box>(Vector3{ 12, 10, 0 }, 1, 4, 2);
+	std::shared_ptr<Box> box5_1 = std::make_shared<Box>(Vector3{ 18, 10, 0 }, 1, 4, 2);
+	std::shared_ptr<Box> box5_2 = std::make_shared<Box>(Vector3{ 15, 8, 0 }, 5, 1, 2);
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle5));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box5));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box5_1));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box5_2));
+
+
+
 
 	SetTargetFPS(60);
 
 	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>(carModel);
-	
+
+
+
 	// game loop
 	while (!WindowShouldClose())		// run the loop until the user presses ESCAPE or presses the Close button on the window
 	{
 		
 		UpdateCamera(&camera, CAMERA_FREE);
-
-		particle->Update();
 
 		BeginDrawing();
 
@@ -80,9 +133,9 @@ int main ()
 
 			BeginMode3D(camera);
 				
-				DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
+				//DrawCube({ -4.0f, 0.0f, 2.0f }, 1.0f, 1.0f, 1.0f, RED);
 
-				particle->Draw3D();
+				filthyEngine->Update();
 
 				DrawGrid(100, 1.0f);
 
@@ -92,8 +145,7 @@ int main ()
 
 			EndMode3D();
 
-			particle->Draw();
-			//particle->DrawDebug();
+			particle->DrawDebug();
 
 			DrawFPS(10, 10);
 
