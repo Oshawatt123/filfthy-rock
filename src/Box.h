@@ -37,8 +37,6 @@ public:
     float GetMinZ() { return Position.z - Depth / 2; }
     float GetMaxZ() { return Position.z + Depth / 2; }
 
-    void SetColor(Color newColor) { color = newColor; }
-
     void Offset(Vector3 offsetValue);
 
     bool isFloor = false;

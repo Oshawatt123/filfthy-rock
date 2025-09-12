@@ -278,7 +278,7 @@ void Particle::Draw3D()
     }
     else
     {
-        DrawSphere(Position, radius, BLUE);
+        DrawSphere(Position, radius, color);
     }
 }
 

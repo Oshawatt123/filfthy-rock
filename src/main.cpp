@@ -26,6 +26,7 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #include <memory>
 #include <cmath>
+#include <array>
 
 
 #include "raylib.h"
@@ -154,7 +155,9 @@ int main ()
 	std::shared_ptr<Particle> particle_fun5 = std::make_shared<Particle>(Vector3{ -3, 5, 10 }, Vector3{ 0, 0, 0 });
 	std::shared_ptr<Particle> particle_fun6 = std::make_shared<Particle>(Vector3{ 2, 2, 10 }, Vector3{ 0, 0, 0 });
 
-	for (int i = 0; i < 10; i++)
+	std::array<Color, 5> colors = { PURPLE, BLUE, YELLOW, WHITE, BLACK };
+
+	for (int i = 0; i < 30; i++)
 	{
 		float min = -5.0f;
 		float max = 5.0f;
@@ -164,6 +167,7 @@ int main ()
 		max = 25;
 		float y = GetRandomValue(min, max);
 		std::shared_ptr<Particle> newParticle = std::make_shared<Particle>(Vector3{ x, y, 10 }, Vector3{ 0, 0, 0 });
+		newParticle->SetColor(colors[GetRandomValue(0, 4)]);
 
 		filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(newParticle));
 	}
@@ -203,12 +207,16 @@ int main ()
 
 	// splitter
 	std::shared_ptr<Box> box_fun_splitter = std::make_shared<Box>(Vector3{ -5.5, 18, 10 }, 1, 7, 2);
+	std::shared_ptr<Box> box_fun_splitter1 = std::make_shared<Box>(Vector3{ -8, 12, 10 }, 4, 1, 2);
+	std::shared_ptr<Box> box_fun_splitter2 = std::make_shared<Box>(Vector3{ -3, 12, 10 }, 4, 1, 2);
+	std::shared_ptr<ForceField> field_fun_splitter = std::make_shared<ForceField>(Vector3{-8, 13, 10}, Vector3{500, 0, 0}, 5, 1, 2);
+	std::shared_ptr<ForceField> field_fun_splitter1 = std::make_shared<ForceField>(Vector3{ -3, 13, 10 }, Vector3{ -500, 0, 0 }, 5, 1, 2);
 
 	// snake
-	std::shared_ptr<ForceField> field_fun_snake1 = std::make_shared<ForceField>(Vector3{ 11, 27, 10 }, Vector3{ 500, -500, 0 }, 3, 3, 2);
-	std::shared_ptr<Box> box_fun_snake = std::make_shared<Box>(Vector3{ 8, 25, 10 }, 10, 1, 2);
-	std::shared_ptr<ForceField> field_fun_snake = std::make_shared<ForceField>(Vector3{ 11, 24, 10 }, Vector3{ -500, 0, 0 }, 3, 1, 2);
-	std::shared_ptr<Box> box_fun_snake3 = std::make_shared<Box>(Vector3{ 9, 23, 10 }, 10, 1, 2);
+	std::shared_ptr<ForceField> field_fun_snake1 = std::make_shared<ForceField>(Vector3{ 11, 27, 10 }, Vector3{ 500, -500, 0 }, 5, 3, 2);
+	std::shared_ptr<Box> box_fun_snake = std::make_shared<Box>(Vector3{ 8, 25, 10 }, 11, 1, 2);
+	std::shared_ptr<ForceField> field_fun_snake = std::make_shared<ForceField>(Vector3{ 13, 24, 10 }, Vector3{ -500, 0, 0 }, 3, 1, 2);
+	std::shared_ptr<Box> box_fun_snake3 = std::make_shared<Box>(Vector3{ 9, 23, 10 }, 11, 1, 2);
 	std::shared_ptr<ForceField> field_fun_snake2 = std::make_shared<ForceField>(Vector3{ 3, 22, 10 }, Vector3{ 500, 0, 0 }, 3, 1, 2);
 	std::shared_ptr<Box> box_fun_snake1 = std::make_shared<Box>(Vector3{ 8, 21, 10 }, 10, 1, 2);
 	std::shared_ptr<Box> box_fun_snake2 = std::make_shared<Box>(Vector3{ 2, 23, 10 }, 1, 6, 2);
@@ -260,6 +268,10 @@ int main ()
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_chute_2_1));
 
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_splitter));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_splitter1));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_splitter2));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun_splitter));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun_splitter1));
 
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_snake));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_snake1));
@@ -285,7 +297,7 @@ int main ()
 	std::unique_ptr<TaitoCar> car = std::make_unique<TaitoCar>(carModel);
 
 
-	bool shouldStepPhysics = false;
+	bool shouldStepPhysics = true;
 	bool stepOneFrame = false;
 
 

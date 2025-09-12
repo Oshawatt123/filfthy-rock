@@ -43,6 +43,7 @@ public:
     virtual void PostPhysics() {};
 
     void SetDebugDraw(bool draw) { drawDebug = draw; }
+    void SetColor(Color newColor) { color = newColor; }
 
     void ApplyAcceleration(Vector3 accel) { ImpactForces = Vector3Add(ImpactForces, accel); }
 
