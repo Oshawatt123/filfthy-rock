@@ -3,4 +3,5 @@
 void PhysicsObject::PrePhysics()
 {
 	ImpactForces = { 0,0,0 };
+	shouldRelocatePostPhysics = false;
 }

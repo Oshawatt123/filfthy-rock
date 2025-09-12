@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "raymath.h"
+#include "FilthyUtil.h"
 
 TaitoCar::TaitoCar()
 {
@@ -24,11 +25,11 @@ void TaitoCar::Update()
 	carAcceleration = { 0,0,0 };
 	if (IsKeyDown(KEY_A))
 	{
-		steeringAngle += (steerForce * GetFrameTime());
+		steeringAngle += (steerForce * FilthyUtil::GetFrameTime());
 	}
 	if (IsKeyDown(KEY_D))
 	{
-		steeringAngle -= (steerForce * GetFrameTime());
+		steeringAngle -= (steerForce * FilthyUtil::GetFrameTime());
 	}
 	if (IsKeyDown(KEY_W))
 	{
@@ -49,11 +50,11 @@ void TaitoCar::Update()
 	{
 		if (steeringAngle > 0)
 		{
-			steeringAngle -= steerNeutralForce * GetFrameTime();
+			steeringAngle -= steerNeutralForce * FilthyUtil::GetFrameTime();
 		}
 		else if (steeringAngle < 0)
 		{
-			steeringAngle += steerNeutralForce * GetFrameTime();
+			steeringAngle += steerNeutralForce * FilthyUtil::GetFrameTime();
 		}
 
 		// set steering angle to 0 if within tolerance
@@ -68,7 +69,7 @@ void TaitoCar::Update()
 
 	float turningRadius = carLength / sin(steeringAngle * DEG2RAD);
 	float angularVelocity = velocity.x / turningRadius;
-	rotation.y += (angularVelocity * RAD2DEG) * GetFrameTime();
+	rotation.y += (angularVelocity * RAD2DEG) * FilthyUtil::GetFrameTime();
 
 
 	forward = Vector3RotateByAxisAngle({ 1,0,0 }, { 0,1,0 }, rotation.y * DEG2RAD);
@@ -102,13 +103,13 @@ void TaitoCar::Update()
 	carAcceleration.x = engineForce.x / mass;
 	carAcceleration.z = engineForce.z / mass;
 
-	velocity.x += carAcceleration.x * GetFrameTime();
-	velocity.z += carAcceleration.z * GetFrameTime();
+	velocity.x += carAcceleration.x * FilthyUtil::GetFrameTime();
+	velocity.z += carAcceleration.z * FilthyUtil::GetFrameTime();
 
 	Vector3 velocityForward = Vector3RotateByAxisAngle(velocity, { 0,1,0 }, rotation.y * DEG2RAD);
 
-	position.x += velocityForward.x * GetFrameTime();
-	position.z += velocityForward.z * GetFrameTime();
+	position.x += velocityForward.x * FilthyUtil::GetFrameTime();
+	position.z += velocityForward.z * FilthyUtil::GetFrameTime();
 }
 
 void TaitoCar::Draw3D()

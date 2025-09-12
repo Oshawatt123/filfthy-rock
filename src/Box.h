@@ -11,6 +11,10 @@ protected:
     float Height = 1.0f;
     float Depth = 1.0f;
 
+    Vector3 initialPosition;
+
+    virtual void OnCollision(PhysicsObject* other) override {};
+
 public:
     Box();
     ~Box();
@@ -32,6 +36,10 @@ public:
     float GetMaxY() { return Position.y + Height / 2; }
     float GetMinZ() { return Position.z - Depth / 2; }
     float GetMaxZ() { return Position.z + Depth / 2; }
+
+    void SetColor(Color newColor) { color = newColor; }
+
+    void Offset(Vector3 offsetValue);
 
     bool isFloor = false;
 

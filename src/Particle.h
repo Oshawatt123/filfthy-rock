@@ -11,6 +11,8 @@ protected:
 
     float radius = 0.5f;
 
+    virtual void OnCollision(PhysicsObject* other) override {};
+
 public:
     Particle();
     ~Particle();
@@ -22,6 +24,8 @@ public:
     virtual void Draw3D() override;
     virtual void Draw() override;
     virtual void DrawDebug() override;
+
+    virtual void PostPhysics() override;
 
     void CheckCollision(std::shared_ptr<PhysicsObject> other = nullptr) override;
     

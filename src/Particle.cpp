@@ -7,14 +7,19 @@
 
 #include "raymath.h"
 #include "math.h"
-#include <Box.h>
+#include "Box.h"
+#include "FilthyUtil.h"
 
 void Particle::Integrate()
 {
     constexpr float gravityAccel = -9.8f;
-    const float deltaTime = GetFrameTime();
+    const float deltaTime = FilthyUtil::GetFrameTime();
 
-    Vector3 Acceleration = { 0,0,0 };
+    Acceleration = { 0,0,0 };
+
+    if (drawDebug)
+        std::cout << "Applying impact forces of {" << ImpactForces.x << ","
+        << ImpactForces.y << "," << ImpactForces.z << "}" << std::endl;
 
     Acceleration.x += ImpactForces.x / Mass;
     Acceleration.y += ImpactForces.y / Mass;
@@ -29,9 +34,18 @@ void Particle::Integrate()
     Velocity.z += Acceleration.z * deltaTime;
 
     // Integrate Position
-    Position.x += Velocity.x * deltaTime;
-    Position.y += Velocity.y * deltaTime;
-    Position.z += Velocity.z * deltaTime;
+    if (shouldRelocatePostPhysics)
+    {
+        postPhysicsLocation.x += Velocity.x * deltaTime;
+        postPhysicsLocation.y += Velocity.y * deltaTime;
+        postPhysicsLocation.z += Velocity.z * deltaTime;
+    }
+    else
+    {
+        Position.x += Velocity.x * deltaTime;
+        Position.y += Velocity.y * deltaTime;
+        Position.z += Velocity.z * deltaTime;
+    }
 
 }
 
@@ -52,9 +66,9 @@ void Particle::CheckCollision(std::shared_ptr<PhysicsObject> other)
     //        float collisionImpulse = -(collisionNormalDot) * (ParticleRestituion + 1) * Mass;
 
     //        Vector3 collisionForce = collisionNormal;
-    //        collisionForce.x *= collisionImpulse / GetFrameTime();
-    //        collisionForce.y *= collisionImpulse / GetFrameTime();
-    //        collisionForce.z *= collisionImpulse / GetFrameTime();
+    //        collisionForce.x *= collisionImpulse / FilthyUtil::GetFrameTime();
+    //        collisionForce.y *= collisionImpulse / FilthyUtil::GetFrameTime();
+    //        collisionForce.z *= collisionImpulse / FilthyUtil::GetFrameTime();
 
     //        ImpactForces = Vector3Add(ImpactForces, collisionForce);
 
@@ -70,7 +84,7 @@ void Particle::CheckCollision(std::shared_ptr<PhysicsObject> other)
     }
 
     // Sphere-AABB collision check
-    if (std::shared_ptr<Box> box = std::static_pointer_cast<Box>(other))
+    if (std::shared_ptr<Box> box = std::dynamic_pointer_cast<Box>(other))
     {
         // get box closest point to sphere
         const float x = fmaxf(box->GetMinX(), fminf(Position.x, box->GetMaxX()));
@@ -84,48 +98,150 @@ void Particle::CheckCollision(std::shared_ptr<PhysicsObject> other)
 
         if (distanceSquared < radius * radius)
         {
-            if (!box->isFloor)
-                DrawSphereWires(Vector3{ x, y, z }, 1, 3, 4, BLUE);
-
             Vector3 collisionNormal = Position - Vector3{ x, y, z };
             collisionNormal = Vector3Normalize(collisionNormal);
-            DrawLine3D(Vector3{x, y, z}, Position + (collisionNormal * 2), RED);
-            DrawSphereWires(Vector3{ x, y, z }, 0.2, 2, 2, RED);
-            DrawSphereWires(Position, 0.2, 2, 2, BLUE);
 
             Vector3 relativeVelocity = Velocity - other->GetVelocity();
-            DrawLine3D(other->GetVelocity(), Velocity, BLUE);
 
             float collisionNormalDot = Vector3DotProduct(relativeVelocity, collisionNormal);
+
+            if (drawDebug)
+            {
+                if (!box->isFloor)
+                    DrawSphereWires(Vector3{ x, y, z }, 1, 3, 4, BLUE);
+
+                DrawLine3D(Vector3{ x, y, z }, Position + (collisionNormal * 2), RED);
+                DrawSphereWires(Vector3{ x, y, z }, 0.2, 2, 2, RED);
+                DrawSphereWires(Position, 0.2, 2, 2, BLUE);
+                DrawLine3D(other->GetVelocity(), Velocity, BLUE);
+            }
+
 
             // if moving towards collision plane
             if (collisionNormalDot < 0)
             {
-                float collisionImpulse = -(collisionNormalDot) * (ParticleRestituion + 1) * Mass;
+                if (other->IsSolid())
+                {
+                    float collisionImpulse = -(collisionNormalDot) * (ParticleRestituion + 1) * Mass;
 
-                Vector3 collisionForce = collisionNormal;
-                collisionForce.x *= collisionImpulse / GetFrameTime();
-                collisionForce.y *= collisionImpulse / GetFrameTime();
-                collisionForce.z *= collisionImpulse / GetFrameTime();
+                    Vector3 collisionForce = collisionNormal;
+                    collisionForce.x *= collisionImpulse / FilthyUtil::GetFrameTime();
+                    collisionForce.y *= collisionImpulse / FilthyUtil::GetFrameTime();
+                    collisionForce.z *= collisionImpulse / FilthyUtil::GetFrameTime();
 
-                ImpactForces = Vector3Add(ImpactForces, collisionForce);
+                    ImpactForces = Vector3Add(ImpactForces, collisionForce);
 
-                std::cout << "Impact force from AABB collision: " << ImpactForces.x << ";" << ImpactForces.y << ";" << ImpactForces.z << std::endl;
+                    if(drawDebug)
+                        std::cout << "Impact force from AABB collision: " << ImpactForces.x << ";" << ImpactForces.y << ";" << ImpactForces.z << std::endl;
 
-                // reposition out of box
+                    // reposition out of box
                 
-                // start at collision point
-                Vector3 newParticlePos = { x, y, z };
-                // move away on collision normal by radius
-                Vector3 a = collisionNormal * radius;
+                    // start at collision point
+                    Vector3 newParticlePos = { x, y, z };
+                    // move away on collision normal by radius
+                    Vector3 a = collisionNormal * radius;
 
-                newParticlePos = Vector3Add(newParticlePos, a);
-                Position = newParticlePos;
+                    newParticlePos = Vector3Add(newParticlePos, a);
+                    // if we already have a new relocation, take the average of them
+                    if (shouldRelocatePostPhysics)
+                    {
+                        postPhysicsLocation = (postPhysicsLocation + newParticlePos) / 2;
+                    }
+                    else
+                    {
+                        postPhysicsLocation = newParticlePos;
+                    }
+                    shouldRelocatePostPhysics = true;
 
-                DrawSphereWires(newParticlePos, 0.2, 3, 3, GREEN);
+                    if(drawDebug)
+                        DrawSphereWires(newParticlePos, 0.2, 3, 3, GREEN);
+                }
             }
         }
     }
+
+    // Sphere-AABB overlap check
+    if (std::shared_ptr<Box> box = std::dynamic_pointer_cast<Box>(other))
+    {
+        if (box->GetMinX() - radius < Position.x && box->GetMaxX() + radius > Position.x &&
+            box->GetMinY() - radius < Position.y && box->GetMaxY() + radius > Position.y &&
+            box->GetMinZ() - radius < Position.z && box->GetMaxZ() + radius > Position.z)
+        {
+            other->OnCollision(this);
+        }
+    }
+
+    // Sphere-Sphere collision
+    if (std::shared_ptr<Particle> particle = std::dynamic_pointer_cast<Particle>(other))
+    {
+        if (std::abs(particle->GetPosition().x - Position.x) < particle->radius + radius &&
+            std::abs(particle->GetPosition().y - Position.y) < particle->radius + radius &&
+            std::abs(particle->GetPosition().z - Position.z) < particle->radius + radius)
+        {
+            Vector3 collisionNormal = Position - other->GetPosition();
+            collisionNormal = Vector3Normalize(collisionNormal);
+
+            Vector3 relativeVelocity = Velocity - other->GetVelocity();
+            //relativeVelocity = Vector3Normalize(relativeVelocity);
+
+            float collisionNormalDot = Vector3DotProduct(relativeVelocity, collisionNormal);
+
+
+            /*std::cout << "attempting particle collision with relative velocity {" << relativeVelocity.x << ","
+                << relativeVelocity.y << "," << relativeVelocity.z << "}" << std::endl;
+
+            std::cout << "attempting particle collision with normal {" << collisionNormal.x << ","
+                << collisionNormal.y << "," << collisionNormal.z << "}" << std::endl;
+
+            std::cout << "attempting particle collision with normal dot {" << collisionNormalDot << "}" << std::endl;*/
+
+            // if moving towards collision plane
+            if (collisionNormalDot < 0)
+            {
+                if (other->IsSolid())
+                {
+                    float collisionImpulse = -(collisionNormalDot) * (ParticleRestituion + 1) * Mass;
+
+                    float massPercent = Mass / (Mass + particle->Mass);
+                    float inverseMassPercent = 1 / massPercent;
+
+                    Vector3 collisionForce = collisionNormal / inverseMassPercent;
+                    collisionForce.x *= collisionImpulse / FilthyUtil::GetFrameTime();
+                    collisionForce.y *= collisionImpulse / FilthyUtil::GetFrameTime();
+                    collisionForce.z *= collisionImpulse / FilthyUtil::GetFrameTime();
+
+                    ImpactForces = Vector3Add(ImpactForces, collisionForce);
+
+                    /*std::cout << "particle collision: {" << collisionForce.x << ","
+                        << collisionForce.y << "," << collisionForce.z <<  "}" << std::endl;*/
+
+                    //std::cout << "Impact force from AABB collision: " << ImpactForces.x << ";" << ImpactForces.y << ";" << ImpactForces.z << std::endl;
+
+                    // reposition out of box
+
+                    // start at collision point
+                    Vector3 newParticlePos = (particle->GetPosition() + Position)/2;
+                    // move away on collision normal by radius
+                    Vector3 a = collisionNormal * radius;
+
+                    newParticlePos = Vector3Add(newParticlePos, a);
+                    if (shouldRelocatePostPhysics)
+                    {
+                        postPhysicsLocation = (postPhysicsLocation + newParticlePos) / 2;
+                    }
+                    else
+                    {
+                        postPhysicsLocation = newParticlePos;
+                    }
+                    shouldRelocatePostPhysics = true;
+
+                    if (drawDebug)
+                        DrawSphereWires(newParticlePos, 0.2, 3, 3, GREEN);
+                }
+            }
+        }
+    }
+
 }
 
 Particle::Particle()
@@ -156,7 +272,14 @@ void Particle::Update()
 
 void Particle::Draw3D()
 {
-    DrawSphere(Position, radius, RED);
+    if (drawDebug)
+    {
+        DrawSphere(Position, radius, RED);
+    }
+    else
+    {
+        DrawSphere(Position, radius, BLUE);
+    }
 }
 
 void Particle::Draw()
@@ -177,7 +300,18 @@ void Particle::DrawDebug()
     DrawText(textString.c_str(), 10, 80, 30, GREEN);
 
     stream.str("");
-    stream << "Acceleration: " << std::fixed << std::setprecision(2) << Acceleration.x << ";" << Acceleration.y << ";" << Acceleration.z;
+    stream << "Acceleration: " << std::fixed << std::setprecision(5) << Acceleration.x << ";" << Acceleration.y << ";" << Acceleration.z;
     textString = stream.str();
     DrawText(textString.c_str(), 10, 130, 30, GREEN);
+
+
+    DrawCylinderWiresEx(Position, Position + (Acceleration * 5), 0.2, 0, 3, PURPLE);
+}
+
+void Particle::PostPhysics()
+{
+    if (shouldRelocatePostPhysics)
+    {
+        Position = postPhysicsLocation;
+    }
 }
