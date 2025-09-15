@@ -30,7 +30,7 @@ public:
     virtual void Update() = 0;
     virtual void Draw3D() = 0;
     virtual void Draw() = 0;
-    virtual void DrawDebug() = 0;
+    virtual void DrawDebug();
     virtual void CheckCollision(std::shared_ptr<PhysicsObject> other = nullptr) = 0;
     
     virtual void OnCollision(PhysicsObject* other) = 0;

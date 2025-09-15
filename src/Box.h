@@ -40,5 +40,6 @@ public:
     void Offset(Vector3 offsetValue);
 
     bool isFloor = false;
+    void SetTransparency(float newTrans) { color.a = newTrans; }
 
 };

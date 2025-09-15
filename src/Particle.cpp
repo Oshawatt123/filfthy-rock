@@ -287,27 +287,6 @@ void Particle::Draw()
 
 }
 
-void Particle::DrawDebug()
-{
-    std::stringstream stream;
-    stream << "Position: " << std::fixed << std::setprecision(2) << Position.x << ";" << Position.y << ";" << Position.z;
-    std::string textString = stream.str();
-    DrawText(textString.c_str(), 10, 30, 30, GREEN);
-
-    stream.str("");
-    stream << "Velocity: " << std::fixed << std::setprecision(2) << Velocity.x << ";" << Velocity.y << ";" << Velocity.z;
-    textString = stream.str();
-    DrawText(textString.c_str(), 10, 80, 30, GREEN);
-
-    stream.str("");
-    stream << "Acceleration: " << std::fixed << std::setprecision(5) << Acceleration.x << ";" << Acceleration.y << ";" << Acceleration.z;
-    textString = stream.str();
-    DrawText(textString.c_str(), 10, 130, 30, GREEN);
-
-
-    DrawCylinderWiresEx(Position, Position + (Acceleration * 5), 0.2, 0, 3, PURPLE);
-}
-
 void Particle::PostPhysics()
 {
     if (shouldRelocatePostPhysics)

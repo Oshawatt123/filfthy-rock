@@ -23,7 +23,6 @@ public:
     virtual void Update() override;
     virtual void Draw3D() override;
     virtual void Draw() override;
-    virtual void DrawDebug() override;
 
     virtual void PostPhysics() override;
 

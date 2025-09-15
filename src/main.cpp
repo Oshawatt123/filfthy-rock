@@ -155,6 +155,8 @@ int main ()
 	std::shared_ptr<Particle> particle_fun5 = std::make_shared<Particle>(Vector3{ -3, 5, 10 }, Vector3{ 0, 0, 0 });
 	std::shared_ptr<Particle> particle_fun6 = std::make_shared<Particle>(Vector3{ 2, 2, 10 }, Vector3{ 0, 0, 0 });
 
+
+	// add marbles
 	std::array<Color, 5> colors = { PURPLE, BLUE, YELLOW, WHITE, BLACK };
 
 	for (int i = 0; i < 30; i++)
@@ -179,8 +181,10 @@ int main ()
 	std::shared_ptr<Box> box_fun4 = std::make_shared<Box>(Vector3{ 0, 30, 10 }, 30, 1, 2);
 
 	// backboard
-	std::shared_ptr<Box> box_fun_back = std::make_shared<Box>(Vector3{ 0, 15, 7 }, 30, 30, 2);
+	std::shared_ptr<Box> box_fun_back = std::make_shared<Box>(Vector3{ 0, 22, 7 }, 30, 15, 2);
 	box_fun_back->SetColor(GRAY);
+	std::shared_ptr<Box> box_fun_back2 = std::make_shared<Box>(Vector3{ 0, 5, 7 }, 30, 15, 2);
+	box_fun_back2->SetColor(GRAY);
 
 	// staircase
 	std::shared_ptr<Box> box_fun5 = std::make_shared<Box>(Vector3{  -1,  20, 10 }, 1, 1, 2);
@@ -188,8 +192,6 @@ int main ()
 	std::shared_ptr<Box> box_fun7 = std::make_shared<Box>(Vector3{  1,  18, 10 }, 1, 1, 2);
 	std::shared_ptr<Box> box_fun8 = std::make_shared<Box>(Vector3{  2,  17, 10 }, 1, 1, 2);
 	std::shared_ptr<Box> box_fun9 = std::make_shared<Box>(Vector3{  3,  16, 10 }, 1, 1, 2);
-	std::shared_ptr<Box> box_fun10 = std::make_shared<Box>(Vector3{ 4, 15, 10 }, 1, 1, 2);
-	std::shared_ptr<Box> box_fun11 = std::make_shared<Box>(Vector3{ 5, 14, 10 }, 1, 1, 2);
 	std::shared_ptr<Box> box_fun12 = std::make_shared<Box>(Vector3{ 6, 13, 10 }, 1, 1, 2);
 	std::shared_ptr<Box> box_fun13 = std::make_shared<Box>(Vector3{ 7, 12, 10 }, 1, 1, 2);
 
@@ -233,12 +235,35 @@ int main ()
 	std::shared_ptr<ForceField> field_fun5 = std::make_shared<ForceField>(Vector3{ 3, 1, 10 }, Vector3{ -1000, 0, 0 }, 20, 1, 2);
 
 
-	/*filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun2));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun3));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun4));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun5));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(particle_fun6));*/
+	// finish
+	std::shared_ptr<ForceField> field_fun_finish = std::make_shared<ForceField>(Vector3{ 4.5,  14, 10 }, Vector3{0, 0, -3000}, 1, 1, 2);
+	std::shared_ptr<Box> box_fun_finish = std::make_shared<Box>(Vector3{ 3, 15, 8 }, 1, 3, 6);
+	box_fun_finish->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish1 = std::make_shared<Box>(Vector3{ 6, 14, 8 }, 1, 2, 6);
+	box_fun_finish1->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish2 = std::make_shared<Box>(Vector3{ 4.5, 13, 8 }, 2, 1, 6);
+	box_fun_finish2->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish3 = std::make_shared<Box>(Vector3{ 4.5, 15, 7 }, 2, 1, 4);
+	box_fun_finish3->SetTransparency(100);
+
+	std::shared_ptr<ForceField> field_fun_finish2 = std::make_shared<ForceField>(Vector3{ 4.5,  14, 3.5 }, Vector3{3000 , 0, 0}, 2, 1, 2);
+	std::shared_ptr<Box> box_fun_finish4 = std::make_shared<Box>(Vector3{ 12, 14, 3 }, 20, 2, 1);
+	box_fun_finish4->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish5 = std::make_shared<Box>(Vector3{ 12, 13, 4 }, 20, 1, 2);
+	box_fun_finish5->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish6 = std::make_shared<Box>(Vector3{ 14, 14, 5.5 }, 16, 2, 1);
+	box_fun_finish6->SetTransparency(100);
+
+	std::shared_ptr<Box> box_fun_finish7 = std::make_shared<Box>(Vector3{ 25, 9, 4 }, 5, 1, 5);
+	box_fun_finish7->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish8 = std::make_shared<Box>(Vector3{ 25, 11, 2 }, 5, 5, 1);
+	box_fun_finish8->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish9 = std::make_shared<Box>(Vector3{ 25, 11, 6 }, 5, 5, 1);
+	box_fun_finish9->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish10 = std::make_shared<Box>(Vector3{ 27, 11, 4 }, 1, 5, 3);
+	box_fun_finish10->SetTransparency(100);
+	std::shared_ptr<Box> box_fun_finish11 = std::make_shared<Box>(Vector3{ 23, 9, 4 }, 1, 5, 5);
+	box_fun_finish11->SetTransparency(100);
 
 
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun));
@@ -247,14 +272,13 @@ int main ()
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun4));
 
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_back));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_back2));
 
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun5));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun6));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun7));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun8));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun9));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun10));
-	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun11));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun12));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun13));
 
@@ -290,6 +314,23 @@ int main ()
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun2));
 	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun5));
+
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun_finish));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish1));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish2));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish3));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(field_fun_finish2));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish4));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish5));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish6));
+
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish7));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish8));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish9));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish10));
+	filthyEngine->AddObjectToSimulation(std::static_pointer_cast<PhysicsObject>(box_fun_finish11));
 
 
 	SetTargetFPS(60);
